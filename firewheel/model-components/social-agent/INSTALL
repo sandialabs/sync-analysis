@@ -30,11 +30,13 @@ trap cleanup ERR
 # Ensure we only complete the script once
 check_flag
 
-# Create docker image
-docker pull ghcr.io/sandialabs/sync-analysis/social-agent:latest
-docker tag ghcr.io/sandialabs/sync-analysis/social-agent:latest social-agent:latest
+VERSION=$( cat "$SCRIPT_DIR/version.txt" )
 
-docker save -o vm_resources/social-agent-image.tar social-agent:latest
+# Create docker image
+docker pull ghcr.io/sandialabs/sync-analysis/social-agent:$VERSION
+docker tag ghcr.io/sandialabs/sync-analysis/social-agent:$VERSION social-agent
+
+docker save -o vm_resources/social-agent-image.tar social-agent
 
 # Set the flag to notify of successful completion
 touch $INSTALL_FLAG
