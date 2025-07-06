@@ -1,0 +1,12 @@
+attributes:
+  depends: []
+  precedes: []
+  provides: []
+model_component_objects: model_component_objects.py
+model_components:
+  depends:
+  - linux.ubuntu2204
+  precedes: []
+name: synchronic_web.ledger_journal
+vm_resources:
+- vm_resources/*

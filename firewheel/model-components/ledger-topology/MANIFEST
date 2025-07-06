@@ -1,0 +1,15 @@
+attributes:
+  depends:
+  - graph
+  precedes: []
+  provides:
+  - topology
+model_components:
+  depends:
+    - synchronic_web.ledger_journal
+    - base_objects
+    - generic_vm_objects
+    - utilities.tools
+  precedes: []
+name: synchronic_web.ledger_topology
+plugin: plugin.py

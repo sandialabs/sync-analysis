@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Create a flag for verifying installation
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+INSTALL_FLAG=$SCRIPT_DIR/.synchronic_web.social_agent.installed
+
+#######################################################
+# Checking if this script has already been complete.
+#######################################################
+function check_flag() {
+    if [[ -f "$INSTALL_FLAG" ]]; then
+        echo >&2 "synchronic_web.social_agent is already installed!"
+        exit 117;  # Structure needs cleaning
+    fi
+}
+
+#######################################################
+# A function to help users clean up a partial installation
+# in the event of an error.
+#######################################################
+function cleanup() {
+    echo "Cleaning up synchronic_web.social_agent install"
+    rm -rf $INSTALL_FLAG
+    exit 1
+}
+trap cleanup ERR
+
+# Start to run the script
+
+# Ensure we only complete the script once
+check_flag
+
+# Create docker image
+docker pull ghcr.io/sandialabs/sync-analysis/social-agent:latest
+docker tag ghcr.io/sandialabs/sync-analysis/social-agent:latest social-agent:latest
+
+docker save -o vm_resources/social-agent-image.tar social-agent:latest
+
+# Set the flag to notify of successful completion
+touch $INSTALL_FLAG
