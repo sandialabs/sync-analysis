@@ -27,7 +27,7 @@ jobs:
       - name: Build and push versioned Docker image
         run: |
           version=$( cat ./firewheel/model-components/social-agent/version.txt )
-          docker build ./firewheel/model-components --tag ghcr.io/${{ github.repository }}/social-agent:$version
+          docker build ./firewheel/model-components/social-agent --tag ghcr.io/${{ github.repository }}/social-agent:$version
           docker push ghcr.io/${{ github.repository }}/social-agent:$version
       - name: Retag and push latest Docker image
         if: github.ref == 'refs/heads/main'
