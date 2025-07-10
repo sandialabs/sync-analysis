@@ -32,7 +32,6 @@ class Journal:
             'PORT=80',
             f'SECRET={self.secret}',
             f'PERIODICITY={self.periodicity}',
-            'DELAY=2',
             'WINDOW=128',
         ])
 
