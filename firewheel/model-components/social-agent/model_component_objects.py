@@ -39,7 +39,7 @@ class SocialAgent:
             '/home/ubuntu/social-agent-image.tar',
             'social-agent-image.tar',
         )
-        self.drop_content(-31, '/home/ubuntu/peers.json', json.dumps(self.peers))
+        self.drop_content(-31, '/home/ubuntu/peers.json', json.dumps(self.peers, indent=2))
         self.run_executable(-30, 'docker', 'load -i /home/ubuntu/social-agent-image.tar')
         self.run_executable(1, 'docker', f'run {args} social-agent')
 

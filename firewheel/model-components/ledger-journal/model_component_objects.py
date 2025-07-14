@@ -19,13 +19,13 @@ class Journal:
         self.add_docker()
         self.run_journal()
 
-        num_cores = 2
+        num_cores = 4
         num_threads = 2
         if self.vm['vcpu']['cores'] < num_cores:
             self.vm['vcpu']['cores'] = num_cores
         if self.vm['vcpu']['threads'] < num_threads:
             self.vm['vcpu']['threads'] = num_threads
-        self.vm['mem'] = 4096
+        self.vm['mem'] = 2**13
 
     def run_journal(self):
         env = ' '.join([

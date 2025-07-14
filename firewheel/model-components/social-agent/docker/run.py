@@ -75,10 +75,10 @@ def run(peers):
         ls[randint(0, NUM_WORDS)] = choice(WORDS)
 
         # # write to the ledger
-        # call('(ledger-set! (*state* data {}) "{}")'.format(
-        #     f'key-{randint(0, env["SIZE"])}',
-        #     ' '.join(ls),
-        # ))
+        call('(ledger-set! (*state* data {}) "{}")'.format(
+            f'key-{randint(0, env["SIZE"])}',
+            ' '.join(ls),
+        ))
 
     until = datetime.now()
     while True:

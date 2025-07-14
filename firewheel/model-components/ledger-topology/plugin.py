@@ -1,5 +1,5 @@
 from firewheel.control.experiment_graph import AbstractPlugin, Vertex
-from synchronic_web.journal import Journal
+from synchronic_web.ledger_journal import Journal
 
 import math
 from netaddr import IPNetwork
