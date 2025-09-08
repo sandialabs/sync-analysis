@@ -1,12 +1,18 @@
 attributes:
-  depends: []
+  depends:
+  - graph
   precedes: []
-  provides: []
+  provides:
+  - topology
 model_component_objects: model_component_objects.py
 model_components:
   depends:
   - linux.ubuntu2204
+  - base_objects
+  - generic_vm_objects
+  - utilities.tools
   precedes: []
 name: synchronic_web.ledger_journal
 vm_resources:
 - vm_resources/*
+plugin: plugin.py
