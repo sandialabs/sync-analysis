@@ -7,7 +7,6 @@ from utilities.tools import Utilities
 
 @require_class(Utilities)
 class Journal:
-
     def __init__(self, secret, periodicity, server=True):
         if server:
             self.decorate(Ubuntu2204Server)
@@ -21,23 +20,37 @@ class Journal:
 
         num_cores = 2
         num_threads = 2
-        if self.vm['vcpu']['cores'] < num_cores:
-            self.vm['vcpu']['cores'] = num_cores
-        if self.vm['vcpu']['threads'] < num_threads:
-            self.vm['vcpu']['threads'] = num_threads
-        self.vm['mem'] = 2**12
+        if self.vm["vcpu"]["cores"] < num_cores:
+            self.vm["vcpu"]["cores"] = num_cores
+        if self.vm["vcpu"]["threads"] < num_threads:
+            self.vm["vcpu"]["threads"] = num_threads
+        self.vm["mem"] = 2**12
 
     def run_journal(self):
-        env = ' '.join([
-            'PORT=80',
-            f'SECRET={self.secret}',
-            f'PERIODICITY={self.periodicity}',
-            'WINDOW=128',
-        ])
+        env = " ".join(
+            [
+                "PORT=80",
+                f"SECRET={self.secret}",
+                f"PERIODICITY={self.periodicity}",
+                "WINDOW=128",
+            ]
+        )
 
-        self.drop_file(-32, '/home/ubuntu/ledger-images.tar', 'ledger-images.tar')
-        self.drop_file(-32, '/home/ubuntu/ledger-compose.tar', 'ledger-compose.tar')
-        self.run_executable(-31, 'bash', arguments='-c "cd /home/ubuntu && tar -xf ledger-images.tar"')
-        self.run_executable(-31, 'bash', arguments='-c "cd /home/ubuntu && tar -xf ledger-compose.tar"')
-        self.run_executable(-30, 'bash', '-c "cd /home/ubuntu/ledger-images && for f in *; do docker load -i \\$f; done"')
-        self.run_executable(1, 'bash', arguments=f'-c "cd /home/ubuntu/ledger-compose && {env} docker compose up"')
+        self.drop_file(-32, "/home/ubuntu/ledger-images.tar", "ledger-images.tar")
+        self.drop_file(-32, "/home/ubuntu/ledger-compose.tar", "ledger-compose.tar")
+        self.run_executable(
+            -31, "bash", arguments='-c "cd /home/ubuntu && tar -xf ledger-images.tar"'
+        )
+        self.run_executable(
+            -31, "bash", arguments='-c "cd /home/ubuntu && tar -xf ledger-compose.tar"'
+        )
+        self.run_executable(
+            -30,
+            "bash",
+            '-c "cd /home/ubuntu/ledger-images && for f in *; do docker load -i \\$f; done"',
+        )
+        self.run_executable(
+            1,
+            "bash",
+            arguments=f'-c "cd /home/ubuntu/ledger-compose && {env} docker compose up"',
+        )
