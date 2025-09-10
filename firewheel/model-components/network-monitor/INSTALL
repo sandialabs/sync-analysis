@@ -2,14 +2,14 @@
 
 # Create a flag for verifying installation
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-INSTALL_FLAG=$SCRIPT_DIR/.synchronic_web.resource_monitor.installed
+INSTALL_FLAG=$SCRIPT_DIR/.synchronic_web.network_monitor.installed
 
 #######################################################
 # Checking if this script has already been complete.
 #######################################################
 function check_flag() {
     if [[ -f "$INSTALL_FLAG" ]]; then
-        echo >&2 "synchronic_web.resource_monitor is already installed!"
+        echo >&2 "synchronic_web.network_monitor is already installed!"
         exit 117;  # Structure needs cleaning
     fi
 }
@@ -19,7 +19,7 @@ function check_flag() {
 # in the event of an error.
 #######################################################
 function cleanup() {
-    echo "Cleaning up synchronic_web.resource_monitor install"
+    echo "Cleaning up synchronic_web.network_monitor install"
     rm -rf $INSTALL_FLAG
     exit 1
 }

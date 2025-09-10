@@ -1,7 +1,7 @@
 import json
 
 from firewheel.control.experiment_graph import AbstractPlugin, Vertex
-from synchronic_web.resource_monitor import Monitor
+from synchronic_web.network_monitor import Monitor
 from synchronic_web.ledger_journal import Journal
 
 from base_objects import Switch, VMEndpoint
