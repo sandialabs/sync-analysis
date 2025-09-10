@@ -24,12 +24,14 @@ class Monitor:
             self.vm["vcpu"]["threads"] = num_threads
         self.vm["mem"] = 2**12
 
-    def run_journal(self):
+    def run_monitor(self):
         env = " ".join(
             [
                 "PORT=80",
             ]
         )
+
+        self.drop_file(-10, "/home/ubuntu/setup.py", "setup.py")
 
         self.drop_file(-32, "/home/ubuntu/monitor-images.tar", "monitor-images.tar")
         self.drop_file(-32, "/home/ubuntu/monitor-compose.tar", "monitor-compose.tar")
@@ -49,3 +51,4 @@ class Monitor:
             "bash",
             arguments=f'-c "cd /home/ubuntu/monitor-compose && {env} docker compose up"',
         )
+        self.run_executable(2, "bash", arguments=f'-c {env} "/home/ubuntu/setup.py"')
