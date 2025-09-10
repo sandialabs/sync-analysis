@@ -10,7 +10,7 @@ model_components:
   - generic_vm_objects
   - utilities.tools
   precedes: []
-name: synchronic_web.resource_monitor
+name: synchronic_web.network_monitor
 plugin: plugin.py
 vm_resources:
 - vm_resources/*.tar

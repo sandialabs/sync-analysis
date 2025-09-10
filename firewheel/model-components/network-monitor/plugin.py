@@ -9,7 +9,7 @@ from netaddr import IPNetwork
 
 
 class Plugin(AbstractPlugin):
-    """synchronic_web.resource_monitor documentation."""
+    """synchronic_web.network_monitor documentation."""
 
     def run(self):
         monitor = Vertex(self.g, "monitor.net")
@@ -34,9 +34,11 @@ class Plugin(AbstractPlugin):
             journal.drop_file(-40, "/home/ubuntu/node_exporter", "node_exporter")
             journal.run_executable(2, "/home/ubuntu/node_exporter")
 
-        monitor.drop_content(-51, "/tmp/hosts", "\n".join(f"{ip} {name}" for name, ip in journal_hosts))
+        monitor.drop_content(
+            -51, "/tmp/hosts", "\n".join(f"{ip} {name}" for name, ip in journal_hosts)
+        )
         monitor.run_executable(
-           -50, "bash", '-c "cat /tmp/hosts >> /etc/hosts && rm /tmp/hosts"'
+            -50, "bash", '-c "cat /tmp/hosts >> /etc/hosts && rm /tmp/hosts"'
         )
         monitor.drop_content(
             -10,
@@ -45,8 +47,9 @@ class Plugin(AbstractPlugin):
                 [
                     {
                         "targets": [f"{ip}:9100"],
-                        "labels": {"instance": name.rsplit(".", 1)[0]}
-                    } for name, ip in journal_hosts
+                        "labels": {"instance": name.rsplit(".", 1)[0]},
+                    }
+                    for name, ip in journal_hosts
                 ],
                 indent=2,
             ),
