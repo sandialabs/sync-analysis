@@ -33,10 +33,10 @@ Simulates social agents that interact with the ledger system, generating realist
 
 ## Quick Start
 
-Run a basic experiment with 4 journal nodes, 2 agent routers, network monitoring, and 2 social agents with size 32 and activity level 0:
+Run a basic experiment with 4 journals and 4 agents running at periodicity 2 (i.e. 2^2 = 4 seconds between blocks), each with network monitoring, 2 outgoing peers and 32 key-value pairs per node, and an activity level of 0 (i.e., 0^2 = 1 read/write per period).
 
 ```bash
-firewheel experiment -r synchronic_web.ledger_topology:4:2 synchronic_web.network_monitor synchronic_web.social_agent:2:32:0 control_network minimega.launch
+firewheel experiment -r synchronic_web.ledger_journal:4:2 synchronic_web.network_monitor synchronic_web.social_agent:2:32:0 control_network minimega.launch
 ```
 
 ### Accessing the Monitoring Dashboard
@@ -65,17 +65,17 @@ To access the Grafana monitoring dashboard:
 
 ### Small Test Environment
 ```bash
-firewheel experiment -r synchronic_web.ledger_topology:2:1 synchronic_web.network_monitor synchronic_web.social_agent:1:16:0 control_network minimega.launch
+firewheel experiment -r synchronic_web.ledger_journal:2:2 synchronic_web.network_monitor synchronic_web.social_agent:1:16:0 control_network minimega.launch
 ```
 
 ### Medium Scale Simulation
 ```bash
-firewheel experiment -r synchronic_web.ledger_topology:8:4 synchronic_web.network_monitor synchronic_web.social_agent:4:64:1 control_network minimega.launch
+firewheel experiment -r synchronic_web.ledger_journal:8:2 synchronic_web.network_monitor synchronic_web.social_agent:4:64:1 control_network minimega.launch
 ```
 
 ### Large Scale Deployment
 ```bash
-firewheel experiment -r synchronic_web.ledger_topology:16:8 synchronic_web.network_monitor synchronic_web.social_agent:8:128:2 control_network minimega.launch
+firewheel experiment -r synchronic_web.ledger_journal:16:2 synchronic_web.network_monitor synchronic_web.social_agent:8:128:2 control_network minimega.launch
 ```
 
 ## Requirements
