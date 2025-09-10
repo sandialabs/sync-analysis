@@ -14,5 +14,5 @@ model_components:
   precedes: []
 name: synchronic_web.ledger_journal
 vm_resources:
-- vm_resources/*
+- vm_resources/*.tar
 plugin: plugin.py

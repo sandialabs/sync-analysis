@@ -31,7 +31,7 @@ trap cleanup ERR
 check_flag
 
 # Pull latest updates from repo
-COMPOSE=compose
+COMPOSE=monitor-compose/docker-compose.yml
 
 mkdir monitor-images
 SECRET=/ docker compose -f $COMPOSE pull
@@ -45,13 +45,11 @@ tar -xf node_exporter-1.9.1.linux-amd64.tar.gz
 mv node_exporter-1.9.1.linux-amd64/node_exporter vm_resources/
 rm node_exporter-1.9.1.linux-amd64.tar.gz node_exporter-1.9.1.linux-amd64 -rf
 
-cp -r sync-services/compose/monitor monitor-compose
 rm vm_resources/monitor-compose.tar -rf
 rm vm_resources/monitor-images.tar -rf
 tar -cf vm_resources/monitor-compose.tar monitor-compose
 tar -cf vm_resources/monitor-images.tar monitor-images
 
-rm monitor-compose -rf
 rm monitor-images -rf
 rm sync-services -rf
 

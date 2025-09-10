@@ -9,7 +9,7 @@ from netaddr import IPNetwork
 
 
 class Plugin(AbstractPlugin):
-    """synchronic_web.social_agent plugin documentation."""
+    """synchronic_web.resource_monitor documentation."""
 
     def run(self):
         monitor = Vertex(self.g, "monitor.net")
@@ -22,7 +22,7 @@ class Plugin(AbstractPlugin):
         monitor_ip = next(ips)
         monitor.connect(monitor_switch, monitor_ip, monitor_network.netmask)
 
-        journals = [v.name for v in self.g.get_vertices() if v.is_decorated_by(Journal)]
+        journals = [v for v in self.g.get_vertices() if v.is_decorated_by(Journal)]
 
         for journal in journals:
             index = int(journal.name.split(".", 1)[0].rsplit("-", 1)[-1])
@@ -30,14 +30,12 @@ class Plugin(AbstractPlugin):
             journal_ip = next(ips)
             journal.connect(monitor_switch, journal_ip, monitor_network.netmask)
 
-            journal.drop_content(-40, "/home/ubuntu/", "node_exporter")
+            journal.drop_content(-40, "/home/ubuntu/node_exporter", "node_exporter")
             journal.run_executable(2, "/home/ubuntu/node_exporter")
 
-        monitor = Vertex(self.g, "monitor.net")
-        monitor.decorate(Monitor)
-        monitor.drop_content(-12, "/tmp/hosts", "\n".join(j.name for j in journals))
-        monitor.run_exectuable(
-            -11, "bash", '-c "cat /tmp/hosts >> /etc/hosts && rm /tmp/hosts"'
+        monitor.drop_content(-51, "/tmp/hosts", "\n".join(j.name for j in journals))
+        monitor.run_executable(
+           -50, "bash", '-c "cat /tmp/hosts >> /etc/hosts && rm /tmp/hosts"'
         )
         monitor.drop_content(
             -10,

@@ -7,7 +7,7 @@ from utilities.tools import Utilities
 
 @require_class(Utilities)
 class Monitor:
-    def __init__(self, secret, server=True):
+    def __init__(self, server=True):
         if server:
             self.decorate(Ubuntu2204Server)
         else:
@@ -28,10 +28,11 @@ class Monitor:
         env = " ".join(
             [
                 "PORT=80",
+                "GRAFANA_USER=admin",
+                "GRAFANA_PASSWORD=admin",
+                "PROMETHEUS=http://prometheus.docker:9090",
             ]
         )
-
-        self.drop_file(-10, "/home/ubuntu/setup.py", "setup.py")
 
         self.drop_file(-32, "/home/ubuntu/monitor-images.tar", "monitor-images.tar")
         self.drop_file(-32, "/home/ubuntu/monitor-compose.tar", "monitor-compose.tar")
@@ -46,6 +47,8 @@ class Monitor:
             "bash",
             '-c "cd /home/ubuntu/monitor-images && for f in *; do docker load -i \\$f; done"',
         )
+        self.drop_file(-10, "/home/ubuntu/setup.py", "setup.py")
+
         self.run_executable(
             1,
             "bash",
