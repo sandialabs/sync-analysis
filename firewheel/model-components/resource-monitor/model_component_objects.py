@@ -27,7 +27,6 @@ class Monitor:
     def run_monitor(self):
         env = " ".join(
             [
-                "PORT=80",
                 "GRAFANA_USER=admin",
                 "GRAFANA_PASSWORD=admin",
                 "PROMETHEUS=http://prometheus.docker:9090",
@@ -54,4 +53,4 @@ class Monitor:
             "bash",
             arguments=f'-c "cd /home/ubuntu/monitor-compose && {env} docker compose up"',
         )
-        self.run_executable(2, "bash", arguments=f'-c {env} "/home/ubuntu/setup.py"')
+        self.run_executable(2, "bash", arguments=f'-c "{env} /home/ubuntu/setup.py"')

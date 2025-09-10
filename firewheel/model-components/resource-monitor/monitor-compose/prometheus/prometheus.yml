@@ -8,4 +8,4 @@ scrape_configs:
   - job_name: "journal-monitor"
     file_sd_configs:
       - files:
-          - /home/ubuntu/targets.json
+          - /etc/prometheus/targets.json

@@ -22,30 +22,31 @@ class Plugin(AbstractPlugin):
         monitor_ip = next(ips)
         monitor.connect(monitor_switch, monitor_ip, monitor_network.netmask)
 
-        journals = [v for v in self.g.get_vertices() if v.is_decorated_by(Journal)]
+        journal_hosts = []
 
-        for journal in journals:
+        for journal in [v for v in self.g.get_vertices() if v.is_decorated_by(Journal)]:
             index = int(journal.name.split(".", 1)[0].rsplit("-", 1)[-1])
 
             journal_ip = next(ips)
             journal.connect(monitor_switch, journal_ip, monitor_network.netmask)
+            journal_hosts.append([journal.name, journal_ip])
 
-            journal.drop_content(-40, "/home/ubuntu/node_exporter", "node_exporter")
+            journal.drop_file(-40, "/home/ubuntu/node_exporter", "node_exporter")
             journal.run_executable(2, "/home/ubuntu/node_exporter")
 
-        monitor.drop_content(-51, "/tmp/hosts", "\n".join(j.name for j in journals))
+        monitor.drop_content(-51, "/tmp/hosts", "\n".join(f"{ip} {name}" for name, ip in journal_hosts))
         monitor.run_executable(
            -50, "bash", '-c "cat /tmp/hosts >> /etc/hosts && rm /tmp/hosts"'
         )
         monitor.drop_content(
             -10,
-            "/home/ubuntu/targets.json",
+            "/home/ubuntu/monitor-compose/prometheus/targets.json",
             json.dumps(
                 [
                     {
-                        "targets": [f"{j.name}:9100" for j in journals],
-                        "labels": {"env": "firewheel", "job": "journals"},
-                    }
+                        "targets": [f"{ip}:9100"],
+                        "labels": {"instance": name.rsplit(".", 1)[0]}
+                    } for name, ip in journal_hosts
                 ],
                 indent=2,
             ),

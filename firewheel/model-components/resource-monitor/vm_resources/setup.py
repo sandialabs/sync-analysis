@@ -33,7 +33,7 @@ while True:
         assert result["users"] >= 1
         print("Connected to Grafana server")
         break
-    except URLError as e:
+    except (ConnectionResetError, URLError) as e:
         print("Failed to connect to Grafana server (retrying in 1s)", e)
         time.sleep(1)
 
