@@ -1,9 +1,7 @@
 attributes:
   depends:
-  - graph
-  precedes: []
-  provides:
   - topology
+  precedes: []
 model_component_objects: model_component_objects.py
 model_components:
   depends:
@@ -12,7 +10,9 @@ model_components:
   - generic_vm_objects
   - utilities.tools
   precedes: []
-name: synchronic_web.ledger_journal
+name: synchronic_web.network_monitor
+plugin: plugin.py
 vm_resources:
 - vm_resources/*.tar
-plugin: plugin.py
+- vm_resources/node_exporter
+- vm_resources/setup.py
