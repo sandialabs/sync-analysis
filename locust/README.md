@@ -33,7 +33,7 @@ $ SECRET=pass locust --host=http://localhost:8192/.interface
 ### Headless Mode (For Automated Testing)
 
 ```bash
-$ SECRET=pass locust --host=http://localhost:8192/.interface --users=10 --spawn-rate=2 --run-time=60s --headless
+$ SECRET=pass locust --host=http://localhost:8192/interface --users=10 --spawn-rate=2 --run-time=60s --headless
 ```
 
 **Expected Behavior:**

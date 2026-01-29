@@ -1,4 +1,5 @@
 import os
+import json
 import random
 from locust import HttpUser, task, events
 
@@ -9,8 +10,12 @@ class HelloWorldUser(HttpUser):
         key = f"key-{random.randint(0, 2**20)}"
         val = f"val-{random.randint(0, 2**20)}"
 
-        request_data = f'(*local* "{os.environ["SECRET"]}" (ledger-set! (*state* locust {key}) {val}))'
-        response = self.client.post("", request_data)
+        request_data = {
+            "function": "set!",
+            "authentication": os.environ["SECRET"],
+            "arguments": [[["*state*", "locust", key]], val],
+        }
+        response = self.client.post("", json=request_data)
 
         # Truncate request and response for readable logging
         req_truncated = (
