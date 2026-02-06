@@ -33,7 +33,7 @@ def call(function, *arguments):
             "arguments": arguments,
             "authentication": env["SECRET"],
         },
-    )
+    ).json()
 
     logger.info(f"{datetime.now().isoformat()} {function} | {arguments} -> {result}")
     return result
@@ -43,7 +43,7 @@ def run(peers):
     # initialize peering
     for peer in peers[env["JOURNAL"]]:
         # todo: handle public key
-        while r := call("peer!", peer.rsplit(".", 1)[0], "http://{peer}/interface"):
+        while r := call("peer!", peer.rsplit(".", 1)[0], {"*type/string*": f"http://{peer}/interface"}):
             if r is not True:
                 logger.warning(f"Could not peer with {peer}, trying again")
                 time.sleep(1)
@@ -65,16 +65,12 @@ def run(peers):
             node = choice(peers[node])
             path += [-1, ["*peers*", node.rsplit(".", 1)[0], "chain"]]
 
-        path += [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]]
+        path += [-1, ["*state*", "data", f"key-{randint(0, env['SIZE'])}"]]
 
         # read from the journal
         result = call("get", [path])
 
-        if (
-            type(result) is list
-            and len(result) == 1
-            and result[0] in ["nothing", "unknown"]
-        ):
+        if type(result) is not str:
             logger.warning("Cannot complete action")
             return
 
