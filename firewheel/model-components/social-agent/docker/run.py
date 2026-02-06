@@ -55,7 +55,7 @@ def run(peers):
         call(
             "set!",
             [["*state*", "data", f"key-{i}"]],
-            " ".join(choice(WORDS, NUM_WORDS)),
+            {"*type/string*": " ".join(choice(WORDS, NUM_WORDS))},
         )
 
     # perform a single action
@@ -81,7 +81,7 @@ def run(peers):
         call(
             "set!",
             [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]],
-            {"*type/string": " ".join(result)},
+            {"*type/string*": " ".join(result)},
         )
 
     until = datetime.now()
