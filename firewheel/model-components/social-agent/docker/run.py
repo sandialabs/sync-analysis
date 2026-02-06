@@ -74,14 +74,14 @@ def run(peers):
             logger.warning("Cannot complete action")
             return
 
-        ls = result['*type/string*'].split(" ")
+        ls = result["*type/string*"].split(" ")
         ls[randint(0, NUM_WORDS)] = choice(WORDS)
 
         # # write to the journal
         call(
             "set!",
             [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]],
-            {"*type/string*": " ".join(result)},
+            {"*type/string*": " ".join(ls)},
         )
 
     until = datetime.now()
