@@ -68,7 +68,7 @@ def run(peers):
         path += [-1, ["*state*", "data", f"key-{randint(0, env['SIZE'])}"]]
 
         # read from the journal
-        result = call("get", [path])
+        result = call("get", path)
 
         if type(result) is not str:
             logger.warning("Cannot complete action")
