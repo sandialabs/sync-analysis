@@ -63,7 +63,7 @@ def run(peers):
         path, node = [], env["JOURNAL"]
         while choice(2) and peers.get(node):
             node = choice(peers[node])
-            path += [-1 ["*peers*", node.rsplit(".", 1)[0], "chain"]]
+            path += [-1, ["*peers*", node.rsplit(".", 1)[0], "chain"]]
 
         path += [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]]
 
