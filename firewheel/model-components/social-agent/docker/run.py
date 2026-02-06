@@ -70,18 +70,18 @@ def run(peers):
         # read from the journal
         result = call("get", path)
 
-        if type(result) is not str:
+        if type(result) is not dict:
             logger.warning("Cannot complete action")
             return
 
-        ls = result.split(" ")
+        ls = result['*type/string*'].split(" ")
         ls[randint(0, NUM_WORDS)] = choice(WORDS)
 
         # # write to the journal
         call(
             "set!",
             [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]],
-            " ".join(result),
+            {"*type/string": " ".join(result)},
         )
 
     until = datetime.now()
