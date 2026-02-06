@@ -28,7 +28,7 @@ NUM_WORDS = 8
 def call(function, *arguments):
     result = requests.post(
         f"http://{env['JOURNAL']}/interface/json",
-        {
+        json={
             "function": function,
             "arguments": arguments,
             "authentication": env["SECRET"],
