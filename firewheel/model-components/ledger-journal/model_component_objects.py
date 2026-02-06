@@ -7,14 +7,14 @@ from utilities.tools import Utilities
 
 @require_class(Utilities)
 class Journal:
-    def __init__(self, secret, periodicity, server=True):
+    def __init__(self, secret, period, server=True):
         if server:
             self.decorate(Ubuntu2204Server)
         else:
             self.decorate(Ubuntu2204Desktop)
 
         self.secret = secret
-        self.periodicity = periodicity
+        self.period = period
         self.add_docker()
         self.run_journal()
 
@@ -31,7 +31,7 @@ class Journal:
             [
                 "PORT=80",
                 f"SECRET={self.secret}",
-                f"PERIODICITY={self.periodicity}",
+                f"PERIOD={self.period}",
                 "WINDOW=128",
             ]
         )

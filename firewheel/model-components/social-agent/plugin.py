@@ -57,7 +57,7 @@ class Plugin(AbstractPlugin):
                     init_args=[
                         journal.name,
                         journal.secret,
-                        journal.periodicity,
+                        journal.period,
                         size,
                         activity,
                         peers,

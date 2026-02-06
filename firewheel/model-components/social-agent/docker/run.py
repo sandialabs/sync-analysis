@@ -26,29 +26,26 @@ with open(os.path.join(DIR, "frankenstein.txt")) as fd:
 NUM_WORDS = 8
 
 
-def call(query):
+def call(function, *arguments):
     result = requests.post(
-        f"http://{env['JOURNAL']}/.interface",
-        '(*local* "{}" {})'.format(
-            env["SECRET"],
-            query,
-        ),
-    ).text
+        f"http://{env['JOURNAL']}/interface/json",
+        {
+            "function": function,
+            "arguments": arguments,
+            "authentication": env["SECRET"],
+        },
+    )
 
-    logger.info(f"{datetime.now().isoformat()} {query} -> {result}")
+    logger.info(f"{datetime.now().isoformat()} {function} | {arguments} -> {result}")
     return result
 
 
 def run(peers):
     # initialize peering
     for peer in peers[env["JOURNAL"]]:
-        while r := call(
-            '(ledger-peer! {} (lambda (msg) (sync-remote "{}" msg)))'.format(
-                peer.rsplit(".", 1)[0],
-                f"http://{peer}/.interface",
-            )
-        ):
-            if r != "#t":
+        # todo: handle public key
+        while r := call("peer!", peer.rsplit(".", 1)[0], "http://{peer}/interface"):
+            if r is not True:
                 logger.warning(f"Could not peer with {peer}, trying again")
                 time.sleep(1)
             else:
@@ -57,10 +54,9 @@ def run(peers):
     # preload the ledger
     for i in range(int(env["SIZE"])):
         call(
-            '(ledger-set! (*state* data {}) "{}"))'.format(
-                f"key-{i}",
-                " ".join(choice(WORDS, NUM_WORDS)),
-            )
+            "set!",
+            [["*state*", "data", f"key-{i}"]],
+            " ".join(choice(WORDS, NUM_WORDS)),
         )
 
     # perform a single action
@@ -68,46 +64,36 @@ def run(peers):
         path, node = [], env["JOURNAL"]
         while choice(2) and peers.get(node):
             node = choice(peers[node])
-            path += ["*peers*", node.rsplit(".", 1)[0]]
+            path += [-1 ["*peers*", node.rsplit(".", 1)[0], "chain"]]
 
-        path += ["*state*", "data", f"key-{randint(0, env['SIZE'])}"]
+        path += [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]]
 
         # read from the ledger
-        query = f"(ledger-get ({' '.join(path)}))"
-        response = call(query)
+        result = call("get", [path])
 
-        if not response.startswith("(object "):
+        if (
+            type(result) is list
+            and len(result) == 1
+            and result[0] in ["nothing", "unknown"]
+        ):
             logger.warning("Cannot complete action")
             return
 
-        ls = response[9:-2].split(" ")
+        ls = result.split(" ")
         ls[randint(0, NUM_WORDS)] = choice(WORDS)
 
         # # write to the ledger
         call(
-            '(ledger-set! (*state* data {}) "{}")'.format(
-                f"key-{randint(0, env['SIZE'])}",
-                " ".join(ls),
-            )
+            "set!",
+            [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]],
+            " ".join(result),
         )
 
     until = datetime.now()
     while True:
         Thread(target=_act, args=[call]).start()
         time.sleep(max((until - datetime.now()).total_seconds(), 0))
-        until += timedelta(
-            seconds=exponential(
-                2
-                ** (
-                    sum(
-                        [
-                            int(env["PERIODICITY"]),
-                            -int(env["ACTIVITY"]),
-                        ]
-                    )
-                )
-            )
-        )
+        until += timedelta(seconds=int(env["ACTIVITY"]))
 
 
 if __name__ == "__main__":
