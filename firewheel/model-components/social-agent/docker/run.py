@@ -5,7 +5,6 @@ import json
 import logging
 import requests
 
-from datetime import datetime
 from numpy.random import exponential, choice, randint
 from datetime import datetime, timedelta
 from threading import Thread
