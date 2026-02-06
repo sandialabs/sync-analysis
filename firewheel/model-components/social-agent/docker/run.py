@@ -50,7 +50,7 @@ def run(peers):
             else:
                 break
 
-    # preload the ledger
+    # preload the journal
     for i in range(int(env["SIZE"])):
         call(
             "set!",
@@ -67,7 +67,7 @@ def run(peers):
 
         path += [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]]
 
-        # read from the ledger
+        # read from the journal
         result = call("get", [path])
 
         if (
@@ -81,7 +81,7 @@ def run(peers):
         ls = result.split(" ")
         ls[randint(0, NUM_WORDS)] = choice(WORDS)
 
-        # # write to the ledger
+        # # write to the journal
         call(
             "set!",
             [["*state*", "data", f"key-{randint(0, env['SIZE'])}"]],
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # poll until journal is up
     while True:
         try:
-            int(call("(ledger-index)"))
+            int(call("size"))
             break
         except Exception:
             time.sleep(1)

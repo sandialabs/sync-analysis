@@ -12,7 +12,7 @@ model_components:
   - generic_vm_objects
   - utilities.tools
   precedes: []
-name: synchronic_web.ledger_journal
+name: synchronic_web.general_journal
 vm_resources:
 - vm_resources/*.tar
 plugin: plugin.py
