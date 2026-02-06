@@ -70,7 +70,7 @@ def run(peers):
         # read from the journal
         result = call("get", path)
 
-        if type(result) is not dict:
+        if type(result) is not dict or "*type/string*" not in result:
             logger.warning("Cannot complete action")
             return
 
