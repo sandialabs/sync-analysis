@@ -43,7 +43,7 @@ def run(peers):
     # initialize peering
     for peer in peers[env["JOURNAL"]]:
         # todo: handle public key
-        while r := call("peer!", peer.rsplit(".", 1)[0], {"*type/string*": f"http://{peer}/interface"}):
+        while r := call("general-peer!", peer.rsplit(".", 1)[0], {"*type/string*": f"http://{peer}/interface"}):
             if r is not True:
                 logger.warning(f"Could not peer with {peer}, trying again")
                 time.sleep(1)
