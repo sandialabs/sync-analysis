@@ -1,5 +1,5 @@
 from firewheel.control.experiment_graph import AbstractPlugin, Vertex
-from synchronic_web.ledger_journal import Journal
+from synchronic_web.general_journal import Journal
 
 import math
 from netaddr import IPNetwork
@@ -21,10 +21,10 @@ class Plugin(AbstractPlugin):
             )
         return newseq
 
-    def run(self, number, periodicity, server="True"):
+    def run(self, number, period, server="True"):
         num_agents = int(number)
         server_val = literal_eval(server)
-        periodicity_val = literal_eval(periodicity)
+        period_val = literal_eval(period)
 
         max_agents_per_router = 50
         num_routers = math.ceil(num_agents / max_agents_per_router)
@@ -33,7 +33,7 @@ class Plugin(AbstractPlugin):
         for i in range(num_agents):
             agent = Vertex(self.g, f"journal-{i}.net")
             agent.decorate(
-                Journal, init_args=[f"pass-{i}", periodicity_val, server_val]
+                Journal, init_args=[f"pass-{i}", period_val, server_val]
             )
             agents.append(agent)
 

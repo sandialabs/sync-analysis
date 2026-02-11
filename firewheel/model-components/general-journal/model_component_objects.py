@@ -7,14 +7,14 @@ from utilities.tools import Utilities
 
 @require_class(Utilities)
 class Journal:
-    def __init__(self, secret, periodicity, server=True):
+    def __init__(self, secret, period, server=True):
         if server:
             self.decorate(Ubuntu2204Server)
         else:
             self.decorate(Ubuntu2204Desktop)
 
         self.secret = secret
-        self.periodicity = periodicity
+        self.period = period
         self.add_docker()
         self.run_journal()
 
@@ -31,28 +31,28 @@ class Journal:
             [
                 "PORT=80",
                 f"SECRET={self.secret}",
-                f"PERIODICITY={self.periodicity}",
+                f"PERIOD={self.period}",
                 "WINDOW=128",
             ]
         )
 
-        self.drop_file(-32, "/home/ubuntu/ledger-images.tar", "ledger-images.tar")
-        self.drop_file(-32, "/home/ubuntu/ledger-compose.tar", "ledger-compose.tar")
+        self.drop_file(-32, "/home/ubuntu/general-images.tar", "general-images.tar")
+        self.drop_file(-32, "/home/ubuntu/general-compose.tar", "general-compose.tar")
         self.run_executable(
-            -31, "bash", arguments='-c "cd /home/ubuntu && tar -xf ledger-images.tar"'
+            -31, "bash", arguments='-c "cd /home/ubuntu && tar -xf general-images.tar"'
         )
         self.run_executable(
-            -31, "bash", arguments='-c "cd /home/ubuntu && tar -xf ledger-compose.tar"'
+            -31, "bash", arguments='-c "cd /home/ubuntu && tar -xf general-compose.tar"'
         )
         self.run_executable(
             -30,
             "bash",
-            '-c "cd /home/ubuntu/ledger-images && for f in *; do docker load -i \\$f; done"',
+            '-c "cd /home/ubuntu/general-images && for f in *; do docker load -i \\$f; done"',
         )
         self.run_executable(
             1,
             "bash",
-            arguments=f'-c "cd /home/ubuntu/ledger-compose && {env} docker compose up"',
+            arguments=f'-c "cd /home/ubuntu/general-compose && {env} docker compose up"',
         )
 
 

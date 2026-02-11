@@ -12,8 +12,8 @@ class HelloWorldUser(HttpUser):
 
         request_data = {
             "function": "set!",
-            "authentication": os.environ["SECRET"],
             "arguments": [[["*state*", "locust", key]], val],
+            "authentication": os.environ["SECRET"],
         }
         response = self.client.post("", json=request_data)
 

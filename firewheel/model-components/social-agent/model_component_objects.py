@@ -10,10 +10,10 @@ from utilities.tools import Utilities
 @require_class(Utilities)
 @require_class(Ubuntu2204Server)
 class SocialAgent:
-    def __init__(self, journal, secret, periodicity, size, activity, peers):
+    def __init__(self, journal, secret, period, size, activity, peers):
         self.journal = journal
         self.secret = secret
-        self.periodicity = periodicity
+        self.period = period
         self.size = size
         self.activity = activity
         self.peers = peers
@@ -27,7 +27,7 @@ class SocialAgent:
             [
                 f"-e JOURNAL={self.journal}",
                 f"-e SECRET={self.secret}",
-                f"-e PERIODICITY={self.periodicity}",
+                f"-e PERIOD={self.period}",
                 f"-e SIZE={self.size}",
                 f"-e ACTIVITY={self.activity}",
                 f"-v /home/ubuntu/peers.json:/srv/peers.json",

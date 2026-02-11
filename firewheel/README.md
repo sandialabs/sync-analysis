@@ -8,7 +8,7 @@ This directory contains FIREWHEEL model components for simulating distributed le
 A distributed ledger component that provides journaling capabilities for tracking transactions and state changes across the network.
 
 **Features:**
-- Configurable periodicity for journal updates
+- Configurable period for journal updates
 - Server and desktop deployment modes
 - Docker-based containerization
 - Network peering capabilities
@@ -33,10 +33,10 @@ Simulates social agents that interact with the ledger system, generating realist
 
 ## Quick Start
 
-Run a basic experiment with 4 journals and 4 agents running at periodicity 2 (i.e. 2^2 = 4 seconds between blocks), each with network monitoring, 2 outgoing peers and 32 key-value pairs per node, and an activity level of 0 (i.e., 0^2 = 1 read/write per period).
+Run a basic experiment with 4 journals and 4 agents running at a period of one step every 4 seconds, each with network monitoring, 2 outgoing peers and 32 key-value pairs per node, and an activity level of one read/write every 2 seconds
 
 ```bash
-firewheel experiment -r synchronic_web.ledger_journal:4:2 synchronic_web.network_monitor synchronic_web.social_agent:2:32:0 control_network minimega.launch
+firewheel experiment -r synchronic_web.ledger_journal:4:2 synchronic_web.network_monitor synchronic_web.social_agent:4:32:2 control_network minimega.launch
 ```
 
 ### Accessing the Monitoring Dashboard

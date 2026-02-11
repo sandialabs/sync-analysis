@@ -6,7 +6,7 @@ attributes:
 model_component_objects: model_component_objects.py
 model_components:
   depends:
-    - synchronic_web.ledger_journal
+    - synchronic_web.general_journal
     - base_objects
     - generic_vm_objects
     - utilities.tools
