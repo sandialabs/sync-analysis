@@ -10,13 +10,14 @@ from utilities.tools import Utilities
 @require_class(Utilities)
 @require_class(Ubuntu2204Server)
 class SocialAgent:
-    def __init__(self, journal, secret, period, size, activity, peers):
+    def __init__(self, journal, secret, period, size, activity, peers, words):
         self.journal = journal
         self.secret = secret
         self.period = period
         self.size = size
         self.activity = activity
         self.peers = peers
+        self.words = words
 
         self.add_docker()
         self.run_agent()
@@ -29,10 +30,11 @@ class SocialAgent:
                 f"-e SECRET={self.secret}",
                 f"-e PERIOD={self.period}",
                 f"-e SIZE={self.size}",
+                f"-e WORDS={self.words}",
                 f"-e ACTIVITY={self.activity}",
-                f"-v /home/ubuntu/peers.json:/srv/peers.json",
-                f"--net=host",
-                f"--name social-agent",
+                "-v /home/ubuntu/peers.json:/srv/peers.json",
+                "--net=host",
+                "--name social-agent",
             ]
         )
 

@@ -22,7 +22,7 @@ with open(os.path.join(DIR, "frankenstein.txt")) as fd:
         x.lower() for x in fd.read() if x.isascii() and x.isalpha() or x.isspace()
     ).split()
 
-NUM_WORDS = 8
+NUM_WORDS = int(env['WORDS'])
 
 
 def call(function, *arguments):
