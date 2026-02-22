@@ -33,6 +33,7 @@ class SocialAgent:
                 f"-e WORDS={self.words}",
                 f"-e ACTIVITY={self.activity}",
                 "-v /home/ubuntu/peers.json:/srv/peers.json",
+                "-v /home/ubuntu/node-exporter-textfile:/var/lib/node_exporter/textfile",
                 "--net=host",
                 "--name social-agent",
             ]
@@ -45,6 +46,9 @@ class SocialAgent:
         )
         self.drop_content(
             -31, "/home/ubuntu/peers.json", json.dumps(self.peers, indent=2)
+        )
+        self.run_executable(
+            -31, "mkdir", arguments="-p /home/ubuntu/node-exporter-textfile"
         )
         self.run_executable(
             -30, "docker", "load -i /home/ubuntu/social-agent-image.tar"

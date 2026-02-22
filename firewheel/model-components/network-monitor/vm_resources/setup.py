@@ -127,7 +127,7 @@ result = fetch(
                         {
                             "datasource": {"type": "prometheus", "uid": uid},
                             "editorMode": "builder",
-                            "expr": 'sum by(instance) (rate(node_cpu_seconds_total{mode!="idle"}[1m]))',
+                            "expr": 'sum by(instance) (rate(node_cpu_seconds_total{job="journal-monitor",mode!="idle"}[1m]))',
                             "hide": False,
                             "instant": False,
                             "legendFormat": "__auto",
@@ -202,7 +202,7 @@ result = fetch(
                     "targets": [
                         {
                             "editorMode": "builder",
-                            "expr": "sum by(instance) (node_memory_MemAvailable_bytes)",
+                            "expr": 'sum by(instance) (node_memory_MemAvailable_bytes{job="journal-monitor"})',
                             "hide": True,
                             "legendFormat": "__auto",
                             "range": True,
@@ -211,7 +211,7 @@ result = fetch(
                         {
                             "datasource": {"type": "prometheus", "uid": uid},
                             "editorMode": "builder",
-                            "expr": "sum by(instance) (node_memory_MemTotal_bytes)",
+                            "expr": 'sum by(instance) (node_memory_MemTotal_bytes{job="journal-monitor"})',
                             "hide": True,
                             "instant": False,
                             "legendFormat": "__auto",
@@ -298,7 +298,7 @@ result = fetch(
                     "targets": [
                         {
                             "editorMode": "builder",
-                            "expr": "sum by(instance) (node_filesystem_avail_bytes)",
+                            "expr": 'sum by(instance) (node_filesystem_avail_bytes{job="journal-monitor"})',
                             "hide": True,
                             "legendFormat": "__auto",
                             "range": True,
@@ -307,7 +307,7 @@ result = fetch(
                         {
                             "datasource": {"type": "prometheus", "uid": uid},
                             "editorMode": "builder",
-                            "expr": "sum by(instance) (node_filesystem_size_bytes)",
+                            "expr": 'sum by(instance) (node_filesystem_size_bytes{job="journal-monitor"})',
                             "hide": True,
                             "instant": False,
                             "legendFormat": "__auto",
@@ -394,7 +394,7 @@ result = fetch(
                         {
                             "editorMode": "builder",
                             "exemplar": False,
-                            "expr": "sum by(instance) (rate(node_network_receive_bytes_total[1m]))",
+                            "expr": 'sum by(instance) (rate(node_network_receive_bytes_total{job="journal-monitor"}[1m]))',
                             "hide": True,
                             "instant": False,
                             "legendFormat": "{{label_name}}",
@@ -434,3 +434,114 @@ result = fetch(
 uid = result["metadata"]["uid"]
 
 print(f"Created dashboard with uid: {uid}")
+
+window_variable = {
+    "name": "window",
+    "label": "Window",
+    "type": "custom",
+    "hide": 0,
+    "includeAll": False,
+    "multi": False,
+    "query": "30s,1m,5m,15m",
+    "options": [
+        {"text": "30s", "value": "30s", "selected": False},
+        {"text": "1m", "value": "1m", "selected": True},
+        {"text": "5m", "value": "5m", "selected": False},
+        {"text": "15m", "value": "15m", "selected": False},
+    ],
+    "current": {"text": "1m", "value": "1m", "selected": True},
+}
+
+result = fetch(
+    "apis/dashboard.grafana.app/v1beta1/namespaces/default/dashboards",
+    {
+        "metadata": {"name": "agent-dashboard"},
+        "spec": {
+            "editable": True,
+            "links": [],
+            "panels": [
+                {
+                    "id": 1,
+                    "title": "Request Throughput",
+                    "type": "timeseries",
+                    "datasource": {"type": "prometheus", "uid": uid},
+                    "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+                    "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []},
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": uid},
+                            "expr": 'sum by(instance) (rate(social_agent_requests_total{job="agent-monitor"}[$window]))',
+                            "editorMode": "builder",
+                            "range": True,
+                        }
+                    ],
+                },
+                {
+                    "id": 2,
+                    "title": "Get Latency",
+                    "type": "timeseries",
+                    "datasource": {"type": "prometheus", "uid": uid},
+                    "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+                    "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": uid},
+                            "expr": 'sum by(instance) (rate(social_agent_get_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_get_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
+                            "editorMode": "builder",
+                            "range": True,
+                        }
+                    ],
+                },
+                {
+                    "id": 3,
+                    "title": "Set Latency",
+                    "type": "timeseries",
+                    "datasource": {"type": "prometheus", "uid": uid},
+                    "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+                    "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": uid},
+                            "expr": 'sum by(instance) (rate(social_agent_set_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_set_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
+                            "editorMode": "builder",
+                            "range": True,
+                        }
+                    ],
+                },
+                {
+                    "id": 4,
+                    "title": "Success Rate",
+                    "type": "timeseries",
+                    "datasource": {"type": "prometheus", "uid": uid},
+                    "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+                    "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": uid},
+                            "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_activity_cycles_total{job="agent-monitor"}[$window])), 1e-9)',
+                            "editorMode": "builder",
+                            "range": True,
+                        }
+                    ],
+                },
+            ],
+            "preload": False,
+            "refresh": "10s",
+            "schemaVersion": 42,
+            "tags": [],
+            "templating": {"list": [window_variable]},
+            "time": {"from": "now-1h", "to": "now"},
+            "timepicker": {},
+            "timezone": "browser",
+            "title": "Agent Dashboard",
+        },
+        "status": {},
+    },
+)
+
+agent_uid = result["metadata"]["uid"]
+print(f"Created dashboard with uid: {agent_uid}")
