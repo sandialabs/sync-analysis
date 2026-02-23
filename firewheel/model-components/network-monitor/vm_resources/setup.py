@@ -472,7 +472,7 @@ result = fetch(
                             "refId": "A",
                             "datasource": {"type": "prometheus", "uid": uid},
                             "expr": 'sum by(instance) (rate(social_agent_requests_total{job="agent-monitor"}[$window]))',
-                            "editorMode": "builder",
+                            "editorMode": "code",
                             "range": True,
                         }
                     ],
@@ -489,7 +489,7 @@ result = fetch(
                             "refId": "A",
                             "datasource": {"type": "prometheus", "uid": uid},
                             "expr": 'sum by(instance) (rate(social_agent_get_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_get_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
-                            "editorMode": "builder",
+                            "editorMode": "code",
                             "range": True,
                         }
                     ],
@@ -506,7 +506,7 @@ result = fetch(
                             "refId": "A",
                             "datasource": {"type": "prometheus", "uid": uid},
                             "expr": 'sum by(instance) (rate(social_agent_set_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_set_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
-                            "editorMode": "builder",
+                            "editorMode": "code",
                             "range": True,
                         }
                     ],
@@ -523,7 +523,7 @@ result = fetch(
                             "refId": "A",
                             "datasource": {"type": "prometheus", "uid": uid},
                             "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_activity_cycles_total{job="agent-monitor"}[$window])), 1e-9)',
-                            "editorMode": "builder",
+                            "editorMode": "code",
                             "range": True,
                         }
                     ],
