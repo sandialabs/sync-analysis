@@ -40,7 +40,7 @@ while True:
 
 url = os.environ["PROMETHEUS"]
 
-result = fetch(
+result = fetch(                 # 
     "api/datasources",
     {
         "name": "journals",
@@ -176,6 +176,7 @@ result = fetch(
                                 "mode": "absolute",
                                 "steps": [
                                     {"color": "green", "value": 0},
+
                                     {"color": "red", "value": 80},
                                 ],
                             },
@@ -435,6 +436,22 @@ uid = result["metadata"]["uid"]
 
 print(f"Created dashboard with uid: {uid}")
 
+url = os.environ["PROMETHEUS"]
+
+result = fetch(                 # 
+    "api/datasources",
+    {
+        "name": "agents",
+        "type": "prometheus",
+        "url": os.environ["PROMETHEUS"],
+        "access": "proxy",
+    },
+)
+
+uid = result["datasource"]["uid"]
+
+print(f"Created datasource with uid: {uid}")
+
 window_variable = {
     "name": "window",
     "label": "Window",
@@ -482,10 +499,30 @@ result = fetch(
                 },
                 {
                     "id": 2,
-                    "title": "Get Latency",
+                    "title": "Success Rate",
                     "type": "timeseries",
                     "datasource": {"type": "prometheus", "uid": uid},
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+                    "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+                    "pluginVersion": "12.2.0-17567790421",
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": uid},
+                            "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_activity_cycles_total{job="agent-monitor"}[$window])), 1e-9)',
+                            "editorMode": "code",
+                            "legendFormat": "{{instance}}",
+                            "range": True,
+                            "hide": False,
+                        }
+                    ],
+                },
+                {
+                    "id": 3,
+                    "title": "Get Latency",
+                    "type": "timeseries",
+                    "datasource": {"type": "prometheus", "uid": uid},
+                    "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
                     "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
@@ -501,11 +538,11 @@ result = fetch(
                     ],
                 },
                 {
-                    "id": 3,
+                    "id": 4,
                     "title": "Set Latency",
                     "type": "timeseries",
                     "datasource": {"type": "prometheus", "uid": uid},
-                    "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+                    "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
                     "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
@@ -513,26 +550,6 @@ result = fetch(
                             "refId": "A",
                             "datasource": {"type": "prometheus", "uid": uid},
                             "expr": 'sum by(instance) (rate(social_agent_set_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_set_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
-                            "editorMode": "code",
-                            "legendFormat": "{{instance}}",
-                            "range": True,
-                            "hide": False,
-                        }
-                    ],
-                },
-                {
-                    "id": 4,
-                    "title": "Success Rate",
-                    "type": "timeseries",
-                    "datasource": {"type": "prometheus", "uid": uid},
-                    "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
-                    "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
-                    "pluginVersion": "12.2.0-17567790421",
-                    "targets": [
-                        {
-                            "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": uid},
-                            "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_activity_cycles_total{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
                             "range": True,
