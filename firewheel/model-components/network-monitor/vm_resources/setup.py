@@ -40,7 +40,7 @@ while True:
 
 url = os.environ["PROMETHEUS"]
 
-result = fetch(                 # 
+result = fetch(
     "api/datasources",
     {
         "name": "journals",
@@ -50,9 +50,23 @@ result = fetch(                 #
     },
 )
 
-uid = result["datasource"]["uid"]
+journal_source_uid = result["datasource"]["uid"]
+print(f"Created datasource with uid: {journal_source_uid}")
 
-print(f"Created datasource with uid: {uid}")
+result = fetch(                 # 
+    "api/datasources",
+    {
+        "name": "agents",
+        "type": "prometheus",
+        "url": os.environ["PROMETHEUS"],
+        "access": "proxy",
+    },
+)
+
+agent_source_uid = result["datasource"]["uid"]
+print(f"Created datasource with uid: {agent_source_uid}")
+
+
 
 result = fetch(
     "apis/dashboard.grafana.app/v1beta1/namespaces/default/dashboards",
@@ -63,7 +77,7 @@ result = fetch(
             "links": [],
             "panels": [
                 {
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": journal_source_uid},
                     "description": "",
                     "fieldConfig": {
                         "defaults": {
@@ -125,7 +139,7 @@ result = fetch(
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": journal_source_uid},
                             "editorMode": "builder",
                             "expr": 'sum by(instance) (rate(node_cpu_seconds_total{job="journal-monitor",mode!="idle"}[1m]))',
                             "hide": False,
@@ -139,7 +153,7 @@ result = fetch(
                     "type": "timeseries",
                 },
                 {
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": journal_source_uid},
                     "description": "",
                     "fieldConfig": {
                         "defaults": {
@@ -210,7 +224,7 @@ result = fetch(
                             "refId": "A",
                         },
                         {
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": journal_source_uid},
                             "editorMode": "builder",
                             "expr": 'sum by(instance) (node_memory_MemTotal_bytes{job="journal-monitor"})',
                             "hide": True,
@@ -235,7 +249,7 @@ result = fetch(
                     "type": "timeseries",
                 },
                 {
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": journal_source_uid},
                     "description": "",
                     "fieldConfig": {
                         "defaults": {
@@ -306,7 +320,7 @@ result = fetch(
                             "refId": "A",
                         },
                         {
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": journal_source_uid},
                             "editorMode": "builder",
                             "expr": 'sum by(instance) (node_filesystem_size_bytes{job="journal-monitor"})',
                             "hide": True,
@@ -331,7 +345,7 @@ result = fetch(
                     "type": "timeseries",
                 },
                 {
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": journal_source_uid},
                     "description": "",
                     "fieldConfig": {
                         "defaults": {
@@ -433,24 +447,7 @@ result = fetch(
 )
 
 uid = result["metadata"]["uid"]
-
 print(f"Created dashboard with uid: {uid}")
-
-url = os.environ["PROMETHEUS"]
-
-result = fetch(                 # 
-    "api/datasources",
-    {
-        "name": "agents",
-        "type": "prometheus",
-        "url": os.environ["PROMETHEUS"],
-        "access": "proxy",
-    },
-)
-
-uid = result["datasource"]["uid"]
-
-print(f"Created datasource with uid: {uid}")
 
 window_variable = {
     "name": "window",
@@ -481,14 +478,14 @@ result = fetch(
                     "id": 1,
                     "title": "Request Throughput",
                     "type": "timeseries",
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                     "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
                             "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window]))',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -501,14 +498,14 @@ result = fetch(
                     "id": 2,
                     "title": "Success Rate",
                     "type": "timeseries",
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
                     "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
                             "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_activity_cycles_total{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -521,14 +518,14 @@ result = fetch(
                     "id": 3,
                     "title": "Get Latency",
                     "type": "timeseries",
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
                     "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
                             "expr": 'sum by(instance) (rate(social_agent_get_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_get_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -541,14 +538,14 @@ result = fetch(
                     "id": 4,
                     "title": "Set Latency",
                     "type": "timeseries",
-                    "datasource": {"type": "prometheus", "uid": uid},
+                    "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
                     "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": uid},
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
                             "expr": 'sum by(instance) (rate(social_agent_set_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_set_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -574,3 +571,109 @@ result = fetch(
 
 agent_uid = result["metadata"]["uid"]
 print(f"Created dashboard with uid: {agent_uid}")
+
+result = fetch(
+    "apis/dashboard.grafana.app/v1beta1/namespaces/default/dashboards",
+    {
+        "metadata": {"name": "peering-graph"},
+        "spec": {
+            "editable": True,
+            "links": [],
+            "panels": [
+                {
+                    "id": 1,
+                    "title": "Journal Peering Activity (Inferred)",
+                    "type": "nodeGraph",
+                    "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                    "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0},
+                    "fieldConfig": {
+                        "defaults": {
+                            "color": {"mode": "thresholds"},
+                            "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                    {"color": "green", "value": 0},
+                                    {"color": "orange", "value": 1},
+                                    {"color": "red", "value": 5},
+                                ],
+                            },
+                        },
+                        "overrides": [],
+                    },
+                    "options": {
+                        "nodes": {"arcs": []},
+                    },
+                    "pluginVersion": "12.2.0-17567790421",
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "expr": 'max by(id, title, subTitle) (social_agent_peering_journal_node_info{job="agent-monitor"})',
+                            "editorMode": "code",
+                            "instant": True,
+                            "range": False,
+                            "format": "table",
+                            "legendFormat": "__auto",
+                        },
+                        {
+                            "refId": "B",
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "expr": 'sum by(id, source, target) (rate(social_agent_inferred_journal_hop_requests_total{job="agent-monitor"}[$window]))',
+                            "editorMode": "code",
+                            "instant": True,
+                            "range": False,
+                            "format": "table",
+                            "legendFormat": "__auto",
+                        },
+                    ],
+                    "transformations": [
+                        {
+                            "id": "labelsToFields",
+                            "options": {"mode": "columns"},
+                        }
+                    ],
+                },
+                {
+                    "id": 2,
+                    "title": "Edge Rates (Debug)",
+                    "type": "table",
+                    "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                    "gridPos": {"h": 8, "w": 24, "x": 0, "y": 20},
+                    "fieldConfig": {"defaults": {}, "overrides": []},
+                    "pluginVersion": "12.2.0-17567790421",
+                    "targets": [
+                        {
+                            "refId": "A",
+                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "expr": 'sum by(source, target) (rate(social_agent_inferred_journal_hop_requests_total{job="agent-monitor"}[$window]))',
+                            "editorMode": "code",
+                            "instant": True,
+                            "range": False,
+                            "format": "table",
+                            "legendFormat": "__auto",
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "id": "labelsToFields",
+                            "options": {"mode": "columns"},
+                        }
+                    ],
+                },
+            ],
+            "preload": False,
+            "refresh": "10s",
+            "schemaVersion": 42,
+            "tags": [],
+            "templating": {"list": [window_variable]},
+            "time": {"from": "now-1h", "to": "now"},
+            "timepicker": {},
+            "timezone": "browser",
+            "title": "Peering Graph",
+        },
+        "status": {},
+    },
+)
+
+peering_uid = result["metadata"]["uid"]
+print(f"Created dashboard with uid: {peering_uid}")
