@@ -23,7 +23,7 @@ with open(os.path.join(DIR, "frankenstein.txt")) as fd:
         x.lower() for x in fd.read() if x.isascii() and x.isalpha() or x.isspace()
     ).split()
 
-NUM_WORDS = int(env['WORDS'])
+NUM_WORDS = int(env["WORDS"])
 METRICS_PATH = env.get(
     "METRICS_TEXTFILE", "/var/lib/node_exporter/textfile/social_agent.prom"
 )
@@ -189,7 +189,9 @@ def call(function, *arguments):
             },
         ).json()
         success = True
-        logger.info(f"{datetime.now().isoformat()} {function} | {arguments} -> {result}")
+        logger.info(
+            f"{datetime.now().isoformat()} {function} | {arguments} -> {result}"
+        )
         return result
     finally:
         METRICS.record_request(function, time.perf_counter() - started, success)
@@ -201,7 +203,11 @@ def run(peers):
     # initialize peering
     for peer in peers[local_journal]:
         # todo: handle public key
-        while r := call("general-peer!", peer.rsplit(".", 1)[0], {"*type/string*": f"http://{peer}/interface"}):
+        while r := call(
+            "general-peer!",
+            peer.rsplit(".", 1)[0],
+            {"*type/string*": f"http://{peer}/interface"},
+        ):
             if r is not True:
                 logger.warning(f"Could not peer with {peer}, trying again")
                 time.sleep(1)

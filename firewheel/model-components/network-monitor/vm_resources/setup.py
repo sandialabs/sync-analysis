@@ -53,7 +53,7 @@ result = fetch(
 journal_source_uid = result["datasource"]["uid"]
 print(f"Created datasource with uid: {journal_source_uid}")
 
-result = fetch(                 # 
+result = fetch(
     "api/datasources",
     {
         "name": "agents",
@@ -65,7 +65,6 @@ result = fetch(                 #
 
 agent_source_uid = result["datasource"]["uid"]
 print(f"Created datasource with uid: {agent_source_uid}")
-
 
 
 result = fetch(
@@ -139,7 +138,10 @@ result = fetch(
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
-                            "datasource": {"type": "prometheus", "uid": journal_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": journal_source_uid,
+                            },
                             "editorMode": "builder",
                             "expr": 'sum by(instance) (rate(node_cpu_seconds_total{job="journal-monitor",mode!="idle"}[1m]))',
                             "hide": False,
@@ -190,7 +192,6 @@ result = fetch(
                                 "mode": "absolute",
                                 "steps": [
                                     {"color": "green", "value": 0},
-
                                     {"color": "red", "value": 80},
                                 ],
                             },
@@ -224,7 +225,10 @@ result = fetch(
                             "refId": "A",
                         },
                         {
-                            "datasource": {"type": "prometheus", "uid": journal_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": journal_source_uid,
+                            },
                             "editorMode": "builder",
                             "expr": 'sum by(instance) (node_memory_MemTotal_bytes{job="journal-monitor"})',
                             "hide": True,
@@ -320,7 +324,10 @@ result = fetch(
                             "refId": "A",
                         },
                         {
-                            "datasource": {"type": "prometheus", "uid": journal_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": journal_source_uid,
+                            },
                             "editorMode": "builder",
                             "expr": 'sum by(instance) (node_filesystem_size_bytes{job="journal-monitor"})',
                             "hide": True,
@@ -485,7 +492,10 @@ result = fetch(
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window]))',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -500,12 +510,18 @@ result = fetch(
                     "type": "timeseries",
                     "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
-                    "fieldConfig": {"defaults": {"unit": "percentunit"}, "overrides": []},
+                    "fieldConfig": {
+                        "defaults": {"unit": "percentunit"},
+                        "overrides": [],
+                    },
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'sum by(instance) (rate(social_agent_activity_cycles_success_total{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_activity_cycles_total{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -525,7 +541,10 @@ result = fetch(
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'sum by(instance) (rate(social_agent_get_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_get_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -545,7 +564,10 @@ result = fetch(
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'sum by(instance) (rate(social_agent_set_latency_seconds_sum{job="agent-monitor"}[$window])) / clamp_min(sum by(instance) (rate(social_agent_set_latency_seconds_count{job="agent-monitor"}[$window])), 1e-9)',
                             "editorMode": "code",
                             "legendFormat": "{{instance}}",
@@ -607,7 +629,10 @@ result = fetch(
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'max by(id, title, subTitle) (social_agent_peering_journal_node_info{job="agent-monitor"})',
                             "editorMode": "code",
                             "instant": True,
@@ -617,7 +642,10 @@ result = fetch(
                         },
                         {
                             "refId": "B",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'sum by(id, source, target) (rate(social_agent_inferred_journal_hop_requests_total{job="agent-monitor"}[$window]))',
                             "editorMode": "code",
                             "instant": True,
@@ -644,7 +672,10 @@ result = fetch(
                     "targets": [
                         {
                             "refId": "A",
-                            "datasource": {"type": "prometheus", "uid": agent_source_uid},
+                            "datasource": {
+                                "type": "prometheus",
+                                "uid": agent_source_uid,
+                            },
                             "expr": 'sum by(source, target) (rate(social_agent_inferred_journal_hop_requests_total{job="agent-monitor"}[$window]))',
                             "editorMode": "code",
                             "instant": True,
