@@ -604,12 +604,14 @@ result = fetch(
             "panels": [
                 {
                     "id": 1,
-                    "title": "Journal Peering Activity (Inferred)",
+                    "title": "Journal Peering Activity",
+                    "description": "Edge values are inferred successful journal-hop message rates (messages per second), aggregated across agents over the selected window.",
                     "type": "nodeGraph",
                     "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 20, "w": 24, "x": 0, "y": 0},
                     "fieldConfig": {
                         "defaults": {
+                            "unit": "ops",
                             "color": {"mode": "thresholds"},
                             "thresholds": {
                                 "mode": "absolute",
@@ -633,7 +635,7 @@ result = fetch(
                                 "type": "prometheus",
                                 "uid": agent_source_uid,
                             },
-                            "expr": 'max by(id, title, subTitle) (social_agent_peering_journal_node_info{job="agent-monitor"})',
+                            "expr": 'max by(id, title) (social_agent_peering_journal_node_info{job="agent-monitor"})',
                             "editorMode": "code",
                             "instant": True,
                             "range": False,
@@ -646,7 +648,7 @@ result = fetch(
                                 "type": "prometheus",
                                 "uid": agent_source_uid,
                             },
-                            "expr": 'sum by(id, source, target) (rate(social_agent_inferred_journal_hop_requests_total{job="agent-monitor"}[$window]))',
+                            "expr": 'sum by(id, source, target, secondaryStat) (rate(social_agent_inferred_journal_hop_requests_total{job="agent-monitor"}[$window]))',
                             "editorMode": "code",
                             "instant": True,
                             "range": False,
@@ -663,11 +665,12 @@ result = fetch(
                 },
                 {
                     "id": 2,
-                    "title": "Edge Rates (Debug)",
+                    "title": "Edge Rates",
+                    "description": "Per-edge inferred successful journal-hop message rate (messages per second).",
                     "type": "table",
                     "datasource": {"type": "prometheus", "uid": agent_source_uid},
                     "gridPos": {"h": 8, "w": 24, "x": 0, "y": 20},
-                    "fieldConfig": {"defaults": {}, "overrides": []},
+                    "fieldConfig": {"defaults": {"unit": "ops"}, "overrides": []},
                     "pluginVersion": "12.2.0-17567790421",
                     "targets": [
                         {

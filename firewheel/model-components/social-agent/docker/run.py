@@ -138,7 +138,7 @@ def write_metrics():
     for node in stats["journal_nodes"]:
         node_label = _escape_label(node.rsplit(".", 1)[0])
         lines.append(
-            'social_agent_peering_journal_node_info{id="%s",title="%s",subTitle="Journal"} 1'
+            'social_agent_peering_journal_node_info{id="%s",title="%s"} 1'
             % (node_label, node_label)
         )
 
@@ -155,7 +155,7 @@ def write_metrics():
         dst_label = _escape_label(dst.rsplit(".", 1)[0])
         edge_id = _escape_label(f"{src_label}->{dst_label}")
         lines.append(
-            'social_agent_inferred_journal_hop_requests_total{id="%s",source="%s",target="%s"} %s'
+            'social_agent_inferred_journal_hop_requests_total{id="%s",source="%s",target="%s",secondaryStat="msg/s"} %s'
             % (edge_id, src_label, dst_label, count)
         )
 
