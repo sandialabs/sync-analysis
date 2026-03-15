@@ -1,3 +1,4 @@
+import json
 import importlib.util
 import os
 import requests
@@ -36,6 +37,19 @@ class SocialAgentRunTests(unittest.TestCase):
         with patch.dict(os.environ, {"WORDS": "8", "NODE_NAME": "journal-0", "ACTIVITY": "0"}, clear=False):
             run = _load_run_module()
             self.assertEqual(run.get_activity_seconds(), 0.0)
+
+    def test_get_size_defaults_when_empty_or_nonpositive(self):
+        with patch.dict(os.environ, {"WORDS": "8", "NODE_NAME": "journal-0"}, clear=False):
+            run = _load_run_module()
+            self.assertEqual(run.get_size(), 32)
+
+        with patch.dict(os.environ, {"WORDS": "8", "NODE_NAME": "journal-0", "SIZE": "0"}, clear=False):
+            run = _load_run_module()
+            self.assertEqual(run.get_size(), 32)
+
+        with patch.dict(os.environ, {"WORDS": "8", "NODE_NAME": "journal-0", "SIZE": "12"}, clear=False):
+            run = _load_run_module()
+            self.assertEqual(run.get_size(), 12)
 
     def test_call_size_uses_local_router_gateway_without_auth_header(self):
         with patch.dict(
@@ -252,7 +266,12 @@ class SocialAgentRunTests(unittest.TestCase):
             }
             edges = {"journal-0": ["journal-1"], "journal-1": []}
 
-            with patch.object(run, "call", side_effect=[True, KeyboardInterrupt()]) as mock_call:
+            def _call_side_effect(_nodes, operation, arguments=None):
+                if operation == "general-peer":
+                    return True
+                raise KeyboardInterrupt()
+
+            with patch.object(run, "call", side_effect=_call_side_effect) as mock_call:
                 with self.assertRaises(KeyboardInterrupt):
                     run.run(nodes, edges)
 
@@ -307,6 +326,7 @@ class SocialAgentRunTests(unittest.TestCase):
             run.METRICS = fake_metrics
             nodes = {"journal-0": {"router_host": "router-0"}}
             edges = {"journal-0": []}
+            set_calls = {"count": 0}
 
             class _OneShotSemaphore:
                 def __init__(self):
@@ -323,8 +343,18 @@ class SocialAgentRunTests(unittest.TestCase):
                 def release(self):
                     return None
 
+            def _call_side_effect(_nodes, operation, arguments=None):
+                if operation == "set":
+                    set_calls["count"] += 1
+                    if set_calls["count"] == 1:
+                        return True
+                    raise requests.HTTPError("boom")
+                if operation == "get":
+                    return {"*type/string*": "one two"}
+                raise AssertionError(f"Unexpected operation {operation}")
+
             with patch.object(run.threading, "BoundedSemaphore", return_value=_OneShotSemaphore()):
-                with patch.object(run, "call", side_effect=[{"*type/string*": "one two"}, requests.HTTPError("boom")]):
+                with patch.object(run, "call", side_effect=_call_side_effect):
                     with patch.object(run, "Thread") as mock_thread:
                         mock_thread.side_effect = lambda target, daemon: type(
                             "_InlineThread",
@@ -353,12 +383,76 @@ class SocialAgentRunTests(unittest.TestCase):
             nodes = {"journal-0": {"router_host": "router-0"}}
             edges = {"journal-0": []}
 
-            with patch.object(run, "call", side_effect=[KeyboardInterrupt()]):
+            def _call_side_effect(_nodes, operation, arguments=None):
+                if operation == "set":
+                    raise KeyboardInterrupt()
+                raise AssertionError(f"Unexpected operation {operation}")
+
+            with patch.object(run, "call", side_effect=_call_side_effect):
                 with patch.object(run, "Thread") as mock_thread:
                     with self.assertRaises(KeyboardInterrupt):
                         run.run(nodes, edges)
 
             self.assertFalse(mock_thread.called)
+
+    def test_run_defaults_size_when_size_is_zero(self):
+        with patch.dict(
+            os.environ,
+            {
+                "WORDS": "8",
+                "NODE_NAME": "journal-0",
+                "SECRET": "pass",
+                "SIZE": "0",
+                "ACTIVITY": "4.0",
+            },
+            clear=False,
+        ):
+            run = _load_run_module()
+            fake_metrics = MagicMock()
+            run.METRICS = fake_metrics
+            nodes = {"journal-0": {"router_host": "router-0"}}
+            edges = {"journal-0": []}
+
+            class _OneShotSemaphore:
+                def __init__(self):
+                    self._first = True
+
+                def acquire(self, blocking=True):
+                    if blocking:
+                        return True
+                    if self._first:
+                        self._first = False
+                        return True
+                    raise KeyboardInterrupt()
+
+                def release(self):
+                    return None
+
+            def _call_side_effect(_nodes, operation, arguments=None):
+                if operation == "set":
+                    return True
+                if operation == "get":
+                    return {"*type/string*": "one two"}
+                raise AssertionError(f"Unexpected operation {operation}")
+
+            with patch.object(run.threading, "BoundedSemaphore", return_value=_OneShotSemaphore()):
+                with patch.object(run, "randint", return_value=0):
+                    with patch.object(run, "call", side_effect=_call_side_effect) as mock_call:
+                        with patch.object(run, "Thread") as mock_thread:
+                            mock_thread.side_effect = lambda target, daemon: type(
+                                "_InlineThread",
+                                (),
+                                {"start": lambda self: target()},
+                            )()
+                            with self.assertRaises(KeyboardInterrupt):
+                                run.run(nodes, edges)
+
+            get_call = next(call for call in mock_call.call_args_list if call.args[1] == "get")
+            self.assertEqual(
+                get_call.args[2]["path"][-1],
+                ["*state*", "data", "key-0"],
+            )
+            fake_metrics.record_cycle.assert_called()
 
 
 if __name__ == "__main__":

@@ -32,6 +32,7 @@ METRICS_PATH = os.environ.get(
 )
 BENCHMARK_OUTPUT_PATH = os.environ.get("BENCHMARK_OUTPUT", "")
 BENCHMARK_INTERVAL_SECONDS = 1.0
+DEFAULT_SIZE = 32
 
 
 class Metrics:
@@ -122,6 +123,15 @@ def get_activity_seconds():
     if raw == "":
         return 0.0
     return float(raw)
+
+
+def get_size():
+    raw = os.environ.get("SIZE", str(DEFAULT_SIZE))
+    size = int(raw)
+    if size <= 0:
+        logger.warning("SIZE must be positive; defaulting to %s", DEFAULT_SIZE)
+        return DEFAULT_SIZE
+    return size
 
 
 def write_metrics():
@@ -322,7 +332,7 @@ def call(nodes, operation, arguments=None):
 
 
 def run(nodes, edges):
-    size = int(os.environ["SIZE"])
+    size = get_size()
     work_sem = threading.BoundedSemaphore(MAX_IN_FLIGHT_THREADS)
     activity_seconds = get_activity_seconds()
 
