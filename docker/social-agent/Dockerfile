@@ -11,11 +11,11 @@ RUN set -eu; \
       rm -f /tmp/custom-setup.sh; \
     fi
 
-COPY requirements.txt ./requirements.txt
+COPY docker/social-agent/requirements.txt ./requirements.txt
 
 RUN pip install -r requirements.txt
 
-COPY frankenstein.txt ./frankenstein.txt
-COPY run.py ./run.py
+COPY docker/social-agent/frankenstein.txt ./frankenstein.txt
+COPY docker/social-agent/run.py ./run.py
 
-CMD python run.py
+CMD ["python", "run.py"]
